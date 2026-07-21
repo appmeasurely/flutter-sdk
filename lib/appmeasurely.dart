@@ -39,6 +39,7 @@ class AppMeasurely with WidgetsBindingObserver {
   String? _sessionId;
   DateTime? _sessionStart;
   Map<String, dynamic> _userProperties = {};
+  String? _customerUserId;
   Timer? _flushTimer;
 
   // ── Initialization ─────────────────────────────────────────────────────────
@@ -114,6 +115,12 @@ class AppMeasurely with WidgetsBindingObserver {
     _instance._userProperties[key] = value;
   }
 
+  /// Set customer user ID — links events across devices
+  /// Call this after user logs in with your internal user ID
+  static void setCustomUserId(String userId) {
+    _instance._customerUserId = userId;
+  }
+
   /// Manually flush the event queue
   static void flush() => _instance._flush();
 
@@ -166,6 +173,7 @@ class AppMeasurely with WidgetsBindingObserver {
       'device_type': Platform.isIOS ? 'ios' : 'android',
       'timestamp': DateTime.now().toUtc().toIso8601String(),
       'sdk_version': _sdkVersion,
+      if (_customerUserId != null) 'customer_user_id': _customerUserId,
       ...deviceInfo,
     };
   }
